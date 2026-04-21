@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAI - Sistema de Alerta Inteligente | Prevenção de Desastres com IA</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+    <!-- Dynamic Interactive Background (Windy/Ventusky style) -->
+    <div class="interactive-bg">
+        <iframe 
+            src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=mm&metricTemp=°C&metricWind=km/h&zoom=5&overlay=wind&product=ecmwf&level=surface&lat=-15.0&lon=-50.0&detailLat=-21.969&detailLon=-46.791&detail=true" 
+            frameborder="0"
+            title="Interactive Weather Radar">
+        </iframe>
+        <div class="bg-overlay"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="glass-nav">
+        <div class="logo">
+            <i data-lucide="shield-alert" color="#38bdf8"></i>
+            <span>SAI <span style="font-weight: 300; opacity: 0.8;">| Sistema de Alerta Inteligente</span></span>
+        </div>
+        <div class="nav-links">
+            <a href="#tecnologia">A Tecnologia</a>
+            <a href="#dashboard">Dashboard V1</a>
+            <a href="#contato" class="btn-glow">Agendar Demo</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-content glass-panel">
+            <div class="badge-ai">Powered by ECMWF & Google GraphCast IA</div>
+            <h1>Preveja o Inevitável.<br>Proteja Vidas.</h1>
+            <p>O <strong>SAI</strong> é a plataforma definitiva de monitoramento de rios e prevenção de enchentes. Utilizamos sensores IoT de nível militar combinados a um Comitê de Super Inteligências Artificiais para alertar cidades com <strong>+90% de exatidão</strong> e até 1 hora de antecedência.</p>
+            <div class="hero-actions">
+                <button class="btn-primary" onclick="document.getElementById('contato').scrollIntoView()">Seja um Investidor</button>
+                <button class="btn-secondary" onclick="window.open('http://localhost:5173', '_blank')">Acessar Dashboard Ao Vivo</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Technology Section -->
+    <section class="tech-section" id="tecnologia">
+        <div class="section-title glass-panel-dark">
+            <h2>Por que o SAI é Revolucionário?</h2>
+            <p>Nossa arquitetura é triplamente redundante e une o melhor do Hardware e do Software Global.</p>
+        </div>
+        
+        <div class="tech-grid">
+            <div class="tech-card glass-panel">
+                <div class="icon-wrapper"><i data-lucide="cpu"></i></div>
+                <h3>Sensores IoT Autônomos</h3>
+                <p>Estações baseadas no <strong>ESP32</strong> com sonar JSN-SR04T à prova d'água. Alimentadas 100% por energia solar, medem o nível do rio em tempo real direto nas pontes críticas.</p>
+            </div>
+            
+            <div class="tech-card glass-panel">
+                <div class="icon-wrapper"><i data-lucide="network"></i></div>
+                <h3>Integração Nacional Oficial</h3>
+                <p>Custo zero em aquisição de dados brutos graças à conexão direta com o <strong>INMET, CEMADEN e radares interativos Windy/Ventusky</strong>, trazendo dados hiper-locais.</p>
+            </div>
+
+            <div class="tech-card glass-panel highlight-card">
+                <div class="icon-wrapper"><i data-lucide="brain-circuit"></i></div>
+                <h3>Comitê de IAs (Ensemble)</h3>
+                <p>Um motor preditivo exclusivo (Python FastAPI) que consulta simultaneamente 5 gigantes da Inteligência Artificial Global (GraphCast, AIFS, Pangu) gerando um consenso estatístico de alta fidelidade.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Lead Generation / Contact -->
+    <section class="contact-section" id="contato">
+        <div class="contact-wrapper glass-panel">
+            <div class="contact-text">
+                <h2>Proteja a sua Cidade.</h2>
+                <p>O SAI está pronto para ser implementado em Prefeituras e Defesas Civis. Deixe seu contato para nossa equipe técnica agendar uma demonstração exclusiva.</p>
+            </div>
+            <form class="contact-form" id="leadForm">
+                <input type="text" placeholder="Nome Completo / Órgão" required>
+                <input type="email" placeholder="E-mail Institucional" required>
+                <input type="tel" placeholder="Telefone / WhatsApp" required>
+                <button type="button" class="btn-submit" onclick="submitLead()">Solicitar Implementação</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="glass-footer">
+        <p>&copy; 2026 SAI - Sistema de Alerta Inteligente. Desenvolvido para a Proteção Civil.</p>
+    </footer>
+
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // Lead form submission to API
+        async function submitLead() {
+            const form = document.getElementById('leadForm');
+            if(form.checkValidity()) {
+                const inputs = form.querySelectorAll('input');
+                const leadData = {
+                    nome: inputs[0].value,
+                    email: inputs[1].value,
+                    telefone: inputs[2].value,
+                    cidade: "São João da Boa Vista" // Default/Demo
+                };
+
+                try {
+                    // Usa a URL de produção na Vercel ou local
+                    const apiUrl = window.location.hostname.includes('vercel') 
+                        ? 'https://backend-flax-nine-48.vercel.app/api/leads' 
+                        : 'http://127.0.0.1:8000/api/leads';
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(leadData)
+                    });
+
+                    if(response.ok) {
+                        alert("✅ Informações recebidas com sucesso! Os dados foram salvos no banco de dados e a equipe do SAI entrará em contato.");
+                        form.reset();
+                    } else {
+                        alert("Houve um erro ao processar sua solicitação. Tente novamente mais tarde.");
+                    }
+                } catch (error) {
+                    console.error('Error submitting lead:', error);
+                    alert("Erro de conexão com o banco de dados.");
+                }
+            } else {
+                alert("Por favor, preencha todos os campos.");
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,211 @@
+:root {
+  --perigo: #e74c3c;
+  --atencao: #f1c40f;
+  --seguro: #2ecc71;
+  --dark: #0f172a;
+  --panel-bg: rgba(15, 23, 42, 0.85);
+  --panel-border: rgba(255, 255, 255, 0.1);
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --accent-blue: #38bdf8;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+}
+
+body, html {
+  height: 100%;
+  width: 100%;
+  overflow: hidden; /* Previne scroll indesejado no fullscreen */
+  background: var(--dark);
+}
+
+.app-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* O MAPA OCUPA 100% DA TELA */
+.map-fullscreen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1; /* Nível mais baixo */
+}
+
+/* PAINEL FLUTUANTE (Estilo Ventusky) */
+.floating-panel {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 400px;
+  max-height: 90vh;
+  z-index: 1000; /* Acima do mapa */
+  background: var(--panel-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--panel-border);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.panel-header {
+  padding: 20px;
+  border-bottom: 1px solid var(--panel-border);
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: rgba(0,0,0,0.2);
+}
+
+.panel-header h1 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--accent-blue);
+  margin: 0;
+}
+
+.panel-content {
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Cards Interiores */
+.info-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  padding: 15px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Grids e Stats */
+.stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.stat-box {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 12px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-bottom: 5px;
+}
+
+.stat-value {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* Badge de Status */
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 50px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.status-critical { background: rgba(231, 76, 60, 0.2); color: #ff6b6b; border: 1px solid #ff6b6b; }
+.status-warning { background: rgba(241, 196, 15, 0.2); color: #f1c40f; border: 1px solid #f1c40f; }
+.status-safe { background: rgba(46, 204, 113, 0.2); color: #2ecc71; border: 1px solid #2ecc71; }
+
+/* Botões */
+.btn-danger {
+  width: 100%;
+  padding: 15px;
+  background: #e53e3e;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+  box-shadow: 0 4px 15px rgba(229, 62, 62, 0.4);
+}
+
+.btn-danger:hover {
+  background: #c53030;
+}
+
+/* Lista Histórico */
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  font-size: 0.9rem;
+}
+
+/* Seletor de Camadas (Bottom Right, Ventusky style) */
+.layer-controls {
+  position: absolute;
+  bottom: 30px;
+  right: 30px;
+  z-index: 1000;
+  display: flex;
+  gap: 10px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(12px);
+  padding: 10px;
+  border-radius: 50px;
+  border: 1px solid var(--panel-border);
+}
+
+.layer-btn {
+  background: transparent;
+  color: var(--text-secondary);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.layer-btn.active {
+  background: var(--accent-blue);
+  color: #0f172a;
+}

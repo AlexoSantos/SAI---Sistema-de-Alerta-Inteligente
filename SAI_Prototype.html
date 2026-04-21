@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comando Defesa Civil - SJBV 2026</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        :root { --perigo: #e74c3c; --atencao: #f1c40f; --seguro: #2ecc71; --dark: #2c3e50; --accent: #2980b9; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; background: #dfe6e9; }
+        #header { background: var(--dark); color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; border-bottom: 4px solid var(--accent); }
+        #container { display: flex; flex: 1; overflow: hidden; }
+        #map { flex: 2; z-index: 1; }
+        #sidebar { flex: 1; min-width: 420px; background: #fff; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; box-shadow: -5px 0 15px rgba(0,0,0,0.1); }
+        
+        .card { border: 1px solid #d1d8e0; padding: 15px; border-radius: 10px; background: #fff; }
+        .impact-card { background: #ebf5fb; border-left: 5px solid var(--accent); }
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .stat-item { background: white; padding: 10px; border-radius: 5px; border: 1px solid #eee; text-align: center; }
+        .stat-val { display: block; font-size: 18px; font-weight: bold; color: var(--accent); }
+        .stat-label { font-size: 11px; color: #7f8c8d; text-transform: uppercase; }
+
+        .chart-bar { background: var(--dark); height: 12px; border-radius: 6px; margin: 5px 0; position: relative; }
+        
+        .btn { padding: 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; color: white; width: 100%; font-size: 14px; }
+        .btn-alert { background: var(--perigo); box-shadow: 0 4px 0 #c0392b; }
+        .btn-alert:active { transform: translateY(3px); box-shadow: none; }
+        
+        .badge { padding: 5px 10px; border-radius: 5px; font-size: 12px; font-weight: bold; color: white; }
+    </style>
+</head>
+<body>
+
+<div id="header">
+    <div><strong>SAI - Sistema de Alerta Inteligente</strong> | São João da Boa Vista</div>
+    <div id="date-time">Março 2026 | Logado: Gestor Municipal</div>
+</div>
+
+<div id="container">
+    <div id="map"></div>
+    
+    <div id="sidebar">
+        <div class="card">
+            <span id="badge-status" class="badge" style="background: var(--seguro);">MONITORAMENTO ATIVO</span>
+            <h3 id="bairro-nome" style="margin: 10px 0 5px 0;">Clique no Mapa</h3>
+            <p id="coord-info" style="font-size: 11px; color: #95a5a6;">Selecione uma zona para estimativa de impacto.</p>
+        </div>
+
+        <div id="impact-report" class="card impact-card" style="display:none;">
+            <label>🚨 RELATÓRIO DE IMPACTO ESTIMADO</label>
+            <div class="stat-grid">
+                <div class="stat-item"><span class="stat-val" id="pop-afetada">0</span><span class="stat-label">Habitantes</span></div>
+                <div class="stat-item"><span class="stat-val" id="res-afetada">0</span><span class="stat-label">Domicílios</span></div>
+            </div>
+            <div style="margin-top: 15px;">
+                <label>🚑 RECURSOS NECESSÁRIOS (SUGESTÃO):</label>
+                <div id="recursos-lista" style="font-size: 12px; color: #2c3e50; margin-top: 5px;"></div>
+            </div>
+        </div>
+
+        <div id="hist-card" class="card" style="display:none;">
+            <label>📊 RECORRÊNCIA HISTÓRICA (2021-2026)</label>
+            <div id="hist-graph" style="margin-top:10px;"></div>
+            <p id="hist-info" style="font-size: 12px; color: #7f8c8d; font-style: italic;"></p>
+        </div>
+
+        <div class="card">
+            <label>Canal de Disparo (Cell Broadcast):</label>
+            <textarea id="msg-text" rows="3">ALERTA SJBV: Risco severo de inundação. Estimativa de 1h para impacto. Siga as rotas de fuga indicadas.</textarea>
+            <button class="btn btn-alert" onclick="confirmarDisparo()">AUTORIZAR DISPARO IMEDIATO</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    var map = L.map('map').setView([-21.9696, -46.7916], 14);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+    var circle, marker;
+
+    // DADOS DE DENSIDADE (Simulando dados do IBGE para São João da Boa Vista)
+    const DENSIDADE_MEDIA = 0.005; // Pessoas por metro quadrado em áreas urbanas
+
+    function calcularImpacto(raioMetros) {
+        const area = Math.PI * Math.pow(raioMetros, 2);
+        const populacao = Math.round(area * DENSIDADE_MEDIA);
+        const domicilios = Math.round(populacao / 3.2); // Média de 3.2 pessoas por casa
+        
+        return { pop: populacao, res: domicilios };
+    }
+
+    async function analisarPonto(lat, lng) {
+        // Mostrar painéis
+        document.getElementById('impact-report').style.display = 'block';
+        document.getElementById('hist-card').style.display = 'block';
+
+        // 1. Geocodificação
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+        const data = await res.json();
+        const local = data.address.suburb || data.address.road || "Área Urbana";
+        document.getElementById('bairro-nome').innerText = local;
+        document.getElementById('coord-info').innerText = `Lat: ${lat} | Lng: ${lng}`;
+
+        // 2. Cálculo de Impacto
+        const raio = 800; // Raio padrão de 800m
+        const impacto = calcularImpacto(raio);
+        document.getElementById('pop-afetada').innerText = impacto.pop.toLocaleString();
+        document.getElementById('res-afetada').innerText = impacto.res.toLocaleString();
+
+        // 3. Sugestão de Logística
+        const viaturas = Math.ceil(impacto.pop / 500); // 1 viatura para cada 500 pessoas
+        document.getElementById('recursos-lista').innerHTML = `
+            • <b>${viaturas}</b> Unidades da Defesa Civil<br>
+            • <b>${Math.ceil(viaturas/2)}</b> Unidades de Resgate/SAMU<br>
+            • Prioridade: Evacuação de ${impacto.res} casas.
+        `;
+
+        // 4. Desenho no Mapa
+        if (circle) map.removeLayer(circle);
+        if (marker) map.removeLayer(marker);
+
+        circle = L.circle([lat, lng], { color: 'red', fillColor: '#f03', fillOpacity: 0.3, radius: raio }).addTo(map);
+        marker = L.marker([lat, lng]).addTo(map);
+
+        // 5. Simulação Histórica
+        gerarHistorico();
+    }
+
+    function gerarHistorico() {
+        const histDiv = document.getElementById('hist-graph');
+        histDiv.innerHTML = '';
+        const anos = [2021, 2022, 2023, 2024, 2025];
+        anos.forEach(ano => {
+            const nivel = Math.random() * 100;
+            histDiv.innerHTML += `
+                <div style="font-size:10px; display:flex; align-items:center; gap:10px;">
+                    <span style="width:30px;">${ano}</span>
+                    <div class="chart-bar" style="width:${nivel}%; background:${nivel > 70 ? 'var(--perigo)' : 'var(--dark)'}"></div>
+                </div>`;
+        });
+        document.getElementById('hist-info').innerText = "Análise: Local com recorrência sazonal alta em janeiros.";
+    }
+
+    map.on('click', e => analisarPonto(e.latlng.lat.toFixed(6), e.latlng.lng.toFixed(6)));
+
+    function confirmarDisparo() {
+        const pop = document.getElementById('pop-afetada').innerText;
+        if(confirm(`⚠️ ATENÇÃO: Você está prestes a enviar um alerta sonoro para aproximadamente ${pop} pessoas em São João da Boa Vista.\n\nConfirmar autorização?`)) {
+            alert("Sinal enviado para as operadoras de telefonia via Cell Broadcast.");
+        }
+    }
+</script>
+</body>
+</html>
