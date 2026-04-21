@@ -148,7 +148,7 @@ function App() {
         <div className="panel-header">
           <ShieldAlert size={28} color="#38bdf8" />
           <div>
-            <h1>SAI V2.0</h1>
+            <h1>SAI Sistema de Alerta Inteligente</h1>
             <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Comando Defesa Civil - SJBV</span>
           </div>
         </div>

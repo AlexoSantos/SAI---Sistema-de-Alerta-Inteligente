@@ -11,7 +11,7 @@ from engine.national_apis import NationalWeatherAPI
 from engine.ibge_history import IBGEHistoryData
 from routes import leads
 
-app = FastAPI(title="SAI API", version="1.0.0")
+app = FastAPI(title="SAI Sistema de Alerta Inteligente API", version="1.0.0")
 
 app.include_router(leads.router)
 
@@ -49,7 +49,7 @@ stations_data = {}
 
 @app.get("/")
 def read_root():
-    return {"message": "SAI API is running"}
+    return {"message": "SAI Sistema de Alerta Inteligente API is running"}
 
 @app.post("/api/telemetry", response_model=AlertResponse)
 def receive_telemetry(data: TelemetryData):

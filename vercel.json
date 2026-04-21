@@ -1,4 +1,5 @@
 {
+    "name": "sai-sistema-de-alerta",
     "version": 2,
     "builds": [
         {
