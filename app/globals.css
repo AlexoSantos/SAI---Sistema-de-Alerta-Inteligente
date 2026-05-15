@@ -1,0 +1,171 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* SAI Color System - NASA Mission Control Inspired */
+  --color-background: #030712;
+  --color-foreground: #f8fafc;
+  
+  --color-card: #0f172a;
+  --color-card-foreground: #f1f5f9;
+  
+  --color-popover: #1e293b;
+  --color-popover-foreground: #f1f5f9;
+  
+  --color-primary: #0ea5e9;
+  --color-primary-foreground: #020617;
+  
+  --color-secondary: #1e293b;
+  --color-secondary-foreground: #f1f5f9;
+  
+  --color-muted: #1e293b;
+  --color-muted-foreground: #94a3b8;
+  
+  --color-accent: #10b981;
+  --color-accent-foreground: #020617;
+  
+  --color-destructive: #ef4444;
+  --color-destructive-foreground: #fef2f2;
+  
+  --color-border: #334155;
+  --color-input: #1e293b;
+  --color-ring: #0ea5e9;
+  
+  /* Status Colors */
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+  --color-info: #3b82f6;
+  
+  /* Weather-specific colors */
+  --color-temperature-hot: #ef4444;
+  --color-temperature-warm: #f59e0b;
+  --color-temperature-mild: #22c55e;
+  --color-temperature-cool: #3b82f6;
+  --color-temperature-cold: #8b5cf6;
+  
+  /* AQI Colors */
+  --color-aqi-good: #22c55e;
+  --color-aqi-moderate: #eab308;
+  --color-aqi-unhealthy-sensitive: #f97316;
+  --color-aqi-unhealthy: #ef4444;
+  --color-aqi-very-unhealthy: #a855f7;
+  --color-aqi-hazardous: #7f1d1d;
+  
+  --radius-lg: 0.75rem;
+  --radius-md: 0.5rem;
+  --radius-sm: 0.25rem;
+  
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+/* Base styles */
+* {
+  border-color: var(--color-border);
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+}
+
+/* Custom scrollbar for dark theme */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-muted-foreground);
+}
+
+/* Leaflet map overrides for dark theme */
+.leaflet-container {
+  background: var(--color-card) !important;
+  font-family: var(--font-sans);
+}
+
+.leaflet-popup-content-wrapper {
+  background: var(--color-popover);
+  color: var(--color-popover-foreground);
+  border-radius: var(--radius-md);
+}
+
+.leaflet-popup-tip {
+  background: var(--color-popover);
+}
+
+.leaflet-control-zoom a {
+  background: var(--color-card) !important;
+  color: var(--color-foreground) !important;
+  border-color: var(--color-border) !important;
+}
+
+.leaflet-control-zoom a:hover {
+  background: var(--color-secondary) !important;
+}
+
+/* Animations */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px var(--color-primary), 0 0 10px var(--color-primary);
+  }
+  50% {
+    box-shadow: 0 0 15px var(--color-primary), 0 0 25px var(--color-primary);
+  }
+}
+
+@keyframes radar-sweep {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-radar-sweep {
+  animation: radar-sweep 4s linear infinite;
+}
+
+/* Glass morphism effect */
+.glass {
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(51, 65, 85, 0.5);
+}
+
+/* Gradient backgrounds */
+.gradient-primary {
+  background: linear-gradient(135deg, var(--color-primary), #0284c7);
+}
+
+.gradient-danger {
+  background: linear-gradient(135deg, var(--color-danger), #dc2626);
+}
+
+.gradient-success {
+  background: linear-gradient(135deg, var(--color-success), #16a34a);
+}
+
+/* Data visualization helpers */
+.chart-tooltip {
+  background: var(--color-popover) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius-md) !important;
+  color: var(--color-foreground) !important;
+}
